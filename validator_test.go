@@ -151,3 +151,40 @@ func TestValidationError(t *testing.T) {
 		}
 	}
 }
+
+func TestStrucCrossFieldError(t *testing.T) {
+	var validate *validator.Validate = validator.New()
+	type LoginRequest struct {
+		Username        string `validate:"required,email"`
+		Password        string `validate:"required,min=6"`
+		ConfirmPassword string `validate:"required,min=6,eqfield=Password"`
+	}
+
+	data := LoginRequest{
+		Username:        "gimai@gmail.com",
+		Password:        "3e423dsa",
+		ConfirmPassword: "awefa903",
+	}
+
+	err := validate.Struct(data)
+	fmt.Println(err.Error())
+	assert.NotEqual(t, nil, err)
+}
+
+func TestStrucCrossFieldPass(t *testing.T) {
+	var validate *validator.Validate = validator.New()
+	type LoginRequest struct {
+		Username        string `validate:"required,email"`
+		Password        string `validate:"required,min=6"`
+		ConfirmPassword string `validate:"required,min=6,eqfield=Password"`
+	}
+
+	data := LoginRequest{
+		Username:        "gimai@gmail.com",
+		Password:        "3e423dsa",
+		ConfirmPassword: "3e423dsa",
+	}
+
+	err := validate.Struct(data)
+	assert.Equal(t, nil, err)
+}
