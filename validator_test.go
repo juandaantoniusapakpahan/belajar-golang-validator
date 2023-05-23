@@ -309,3 +309,81 @@ func TestCollectionStructNestedPass(t *testing.T) {
 	err := validate.Struct(data)
 	assert.Equal(t, nil, err)
 }
+
+func TestBasicCollectionError(t *testing.T) {
+	type Address struct {
+		Street string `validate:"required"`
+		City   string `validate:"required"`
+	}
+	type Person struct {
+		Id        string    `validate:"required"`
+		Name      string    `validate:"required"`
+		Addresses []Address `validate:"required,dive"` // dive tag for collection
+		Hobbies   []string  `validate:"required,dive,required,min=4"`
+	}
+
+	var validate *validator.Validate = validator.New()
+
+	data := Person{
+		Id:   "dasij23423",
+		Name: "GGwps",
+		Addresses: []Address{
+			{
+				Street: "Jln Djuanda",
+				City:   "Jakarta selatan",
+			},
+			{
+				Street: "Jln Gatot",
+				City:   "Jakarta Pusat",
+			},
+		},
+		Hobbies: []string{
+			"makan",
+			"mabuk",
+			"",
+			"tdr",
+		},
+	}
+
+	err := validate.Struct(data)
+	fmt.Println(err.Error())
+	assert.NotEqual(t, nil, err)
+}
+func TestBasicCollectionPass(t *testing.T) {
+	type Address struct {
+		Street string `validate:"required"`
+		City   string `validate:"required"`
+	}
+	type Person struct {
+		Id        string    `validate:"required"`
+		Name      string    `validate:"required"`
+		Addresses []Address `validate:"required,dive"` // dive tag for collection
+		Hobbies   []string  `validate:"required,dive,required,min=4"`
+	}
+
+	var validate *validator.Validate = validator.New()
+
+	data := Person{
+		Id:   "dasij23423",
+		Name: "GGwps",
+		Addresses: []Address{
+			{
+				Street: "Jln Djuanda",
+				City:   "Jakarta selatan",
+			},
+			{
+				Street: "Jln Gatot",
+				City:   "Jakarta Pusat",
+			},
+		},
+		Hobbies: []string{
+			"makan",
+			"mabuk",
+			"traveling",
+			"tidur",
+		},
+	}
+
+	err := validate.Struct(data)
+	assert.Equal(t, nil, err)
+}
