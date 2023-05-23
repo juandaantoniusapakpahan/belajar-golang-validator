@@ -51,5 +51,23 @@ func TestValidationVarWithValuePass(t *testing.T) {
 	err := validate.VarWithValue(password, confirmPassword, "eqfield")
 
 	assert.Equal(t, nil, err)
+}
 
+func TestMultipleTagError(t *testing.T) {
+	var validate *validator.Validate = validator.New()
+	data := "salahsalah"
+
+	err := validate.Var(data, "required,numeric")
+
+	fmt.Println(err.Error())
+	assert.NotEqual(t, nil, err)
+}
+
+func TestMultipleTagPass(t *testing.T) {
+
+	var validate *validator.Validate = validator.New()
+	data := 12423
+	err := validate.Var(data, "required,numeric")
+
+	assert.Equal(t, nil, err)
 }
