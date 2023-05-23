@@ -89,3 +89,42 @@ func TestTagParameterPass(t *testing.T) {
 	assert.Equal(t, nil, err)
 
 }
+
+func TestStructTagError(t *testing.T) {
+	type LoginRequest struct {
+		Username string `validate:"required,email"`
+		Password string `validate:"required,min=6"`
+	}
+
+	var validate *validator.Validate = validator.New()
+
+	data := LoginRequest{
+		Username: "pastikansalah",
+		Password: "sdi23",
+	}
+
+	err := validate.Struct(data)
+
+	fmt.Println(err.Error())
+	assert.NotEqual(t, nil, err)
+
+}
+
+func TestStructTagPass(t *testing.T) {
+	type LoginRequest struct {
+		Username string `validate:"required,email"`
+		Password string `validate:"required,min=6"`
+	}
+
+	var validate *validator.Validate = validator.New()
+
+	data := LoginRequest{
+		Username: "pastikan93@gmail.com",
+		Password: "wer9342",
+	}
+
+	err := validate.Struct(data)
+
+	assert.Equal(t, nil, err)
+
+}
