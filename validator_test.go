@@ -128,3 +128,26 @@ func TestStructTagPass(t *testing.T) {
 	assert.Equal(t, nil, err)
 
 }
+
+func TestValidationError(t *testing.T) {
+	var validate *validator.Validate = validator.New()
+	type LoginRequest struct {
+		Username string `validate:"required,email"`
+		Password string `validate:"required,min=6"`
+	}
+
+	data := LoginRequest{
+		Username: "error",
+		Password: "er13",
+	}
+
+	err := validate.Struct(data)
+
+	if err != nil {
+		validationError := err.(validator.ValidationErrors)
+
+		for _, fieldError := range validationError {
+			fmt.Println("error", fieldError.Field(), "on tag", fieldError.Tag(), "with error", fieldError.Error())
+		}
+	}
+}
