@@ -188,3 +188,58 @@ func TestStrucCrossFieldPass(t *testing.T) {
 	err := validate.Struct(data)
 	assert.Equal(t, nil, err)
 }
+
+func TestStructNestedError(t *testing.T) {
+	type Address struct {
+		Street string `validate:"required"`
+		City   string `validate:"required"`
+	}
+	type Person struct {
+		Id      string  `validate:"required"`
+		Name    string  `validate:"required"`
+		Address Address `validate:"required"`
+	}
+
+	var validate *validator.Validate = validator.New()
+
+	data := Person{
+		Id:   "dasij23423",
+		Name: "GGwps",
+		Address: Address{
+			Street: "",
+			City:   "",
+		},
+	}
+
+	err := validate.Struct(data)
+
+	fmt.Println(err.Error())
+	assert.NotEqual(t, nil, err)
+}
+
+func TestStructNestedPass(t *testing.T) {
+	type Address struct {
+		Street string `validate:"required"`
+		City   string `validate:"required"`
+	}
+	type Person struct {
+		Id      string  `validate:"required"`
+		Name    string  `validate:"required"`
+		Address Address `validate:"required"`
+	}
+
+	var validate *validator.Validate = validator.New()
+
+	data := Person{
+		Id:   "dasij23423",
+		Name: "GGwps",
+		Address: Address{
+			Street: "Jalan CutNyadien",
+			City:   "Jakarta Selatan",
+		},
+	}
+
+	err := validate.Struct(data)
+
+	assert.Equal(t, nil, err)
+}
