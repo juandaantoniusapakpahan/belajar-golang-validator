@@ -243,3 +243,69 @@ func TestStructNestedPass(t *testing.T) {
 
 	assert.Equal(t, nil, err)
 }
+
+// use "dive" tag
+func TestCollectionStructNestedError(t *testing.T) {
+	type Address struct {
+		Street string `validate:"required"`
+		City   string `validate:"required"`
+	}
+	type Person struct {
+		Id        string    `validate:"required"`
+		Name      string    `validate:"required"`
+		Addresses []Address `validate:"required,dive"` // dive tag for collection
+	}
+
+	var validate *validator.Validate = validator.New()
+
+	data := Person{
+		Id:   "dasij23423",
+		Name: "GGwps",
+		Addresses: []Address{
+			{
+				Street: "",
+				City:   "",
+			},
+			{
+				Street: "",
+				City:   "",
+			},
+		},
+	}
+
+	err := validate.Struct(data)
+	fmt.Println(err.Error())
+	assert.NotEqual(t, nil, err)
+}
+
+func TestCollectionStructNestedPass(t *testing.T) {
+	type Address struct {
+		Street string `validate:"required"`
+		City   string `validate:"required"`
+	}
+	type Person struct {
+		Id        string    `validate:"required"`
+		Name      string    `validate:"required"`
+		Addresses []Address `validate:"required,dive"` // dive tag for collection
+	}
+
+	var validate *validator.Validate = validator.New()
+
+	data := Person{
+		Id:   "dasij23423",
+		Name: "GGwps",
+		Addresses: []Address{
+			{
+				Street: "Jln Djuanda",
+				City:   "Jakarta selatan",
+			},
+			{
+				Street: "Jln Gatot",
+				City:   "Jakarta Pusat",
+			},
+		},
+	}
+
+	err := validate.Struct(data)
+	assert.Equal(t, nil, err)
+}
