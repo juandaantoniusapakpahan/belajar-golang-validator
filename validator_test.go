@@ -387,3 +387,106 @@ func TestBasicCollectionPass(t *testing.T) {
 	err := validate.Struct(data)
 	assert.Equal(t, nil, err)
 }
+
+func TestMapValidationError(t *testing.T) {
+	type Address struct {
+		Street string `validate:"required"`
+		City   string `validate:"required"`
+	}
+
+	type School struct {
+		Name string `validate:"required"`
+	}
+
+	type Person struct {
+		Id        string            `validate:"required"`
+		Name      string            `validate:"required"`
+		Addresses []Address         `validate:"required,dive"` // dive tag for collection
+		Hobbies   []string          `validate:"required,dive,required,min=4"`
+		School    map[string]School `validate:"required,dive,keys,required,min=3,endkeys,required"`
+	}
+
+	var validate *validator.Validate = validator.New()
+
+	data := Person{
+		Id:   "dasij23423",
+		Name: "GGwps",
+		Addresses: []Address{
+			{
+				Street: "Jln Djuanda",
+				City:   "Jakarta selatan",
+			},
+			{
+				Street: "Jln Gatot",
+				City:   "Jakarta Pusat",
+			},
+		},
+		Hobbies: []string{
+			"makan",
+			"mabuk",
+			"dfasdf",
+			"tsfsdfdr",
+		},
+		School: map[string]School{
+			"DSFW": {Name: "GGWP"},
+			"DWDF": {Name: ""},
+			"":     {Name: "werwae"},
+			"ds":   {Name: "we98we"},
+		},
+	}
+
+	err := validate.Struct(data)
+	fmt.Println(err.Error())
+	assert.NotEqual(t, nil, err)
+}
+
+func TestMapValidationPass(t *testing.T) {
+	type Address struct {
+		Street string `validate:"required"`
+		City   string `validate:"required"`
+	}
+
+	type School struct {
+		Name string `validate:"required"`
+	}
+
+	type Person struct {
+		Id        string            `validate:"required"`
+		Name      string            `validate:"required"`
+		Addresses []Address         `validate:"required,dive"` // dive tag for collection
+		Hobbies   []string          `validate:"required,dive,required,min=4"`
+		School    map[string]School `validate:"required,dive,keys,required,min=3,endkeys,required"`
+	}
+
+	var validate *validator.Validate = validator.New()
+
+	data := Person{
+		Id:   "dasij23423",
+		Name: "GGwps",
+		Addresses: []Address{
+			{
+				Street: "Jln Djuanda",
+				City:   "Jakarta selatan",
+			},
+			{
+				Street: "Jln Gatot",
+				City:   "Jakarta Pusat",
+			},
+		},
+		Hobbies: []string{
+			"makan",
+			"mabuk",
+			"dfasdf",
+			"tsfsdfdr",
+		},
+		School: map[string]School{
+			"DSFW": {Name: "GGWP"},
+			"DWDF": {Name: "asdfsa"},
+			"DSFS": {Name: "werwae"},
+			"DSFV": {Name: "we98we"},
+		},
+	}
+
+	err := validate.Struct(data)
+	assert.Equal(t, nil, err)
+}
