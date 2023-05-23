@@ -31,3 +31,25 @@ func TestValidationTagCorrect(t *testing.T) {
 
 	assert.Equal(t, nil, err)
 }
+
+func TestValidationVarWithValueError(t *testing.T) {
+	var validate *validator.Validate = validator.New()
+	password := "secret"
+	confirmPassword := "notsame"
+
+	err := validate.VarWithValue(password, confirmPassword, "eqfield")
+
+	fmt.Println(err.Error())
+	assert.NotEqual(t, nil, err)
+}
+
+func TestValidationVarWithValuePass(t *testing.T) {
+	var validate *validator.Validate = validator.New()
+	password := "secret"
+	confirmPassword := "secret"
+
+	err := validate.VarWithValue(password, confirmPassword, "eqfield")
+
+	assert.Equal(t, nil, err)
+
+}
