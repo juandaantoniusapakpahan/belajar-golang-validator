@@ -1,5 +1,4 @@
-module github.com/juandaantoniusapakpahan/go-validator
-
+module github.com/juandaantoniusapakpahan/belajar-golang-validator
 go 1.20
 
 require (

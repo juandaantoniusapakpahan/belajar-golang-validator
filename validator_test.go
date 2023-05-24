@@ -490,3 +490,118 @@ func TestMapValidationPass(t *testing.T) {
 	err := validate.Struct(data)
 	assert.Equal(t, nil, err)
 }
+
+func TestMapValidationBasicError(t *testing.T) {
+	type Address struct {
+		Street string `validate:"required"`
+		City   string `validate:"required"`
+	}
+
+	type School struct {
+		Name string `validate:"required"`
+	}
+
+	type Person struct {
+		Id        string            `validate:"required"`
+		Name      string            `validate:"required"`
+		Addresses []Address         `validate:"required,dive"` // dive tag for collection
+		Hobbies   []string          `validate:"required,dive,required,min=4"`
+		School    map[string]School `validate:"required,dive,keys,required,min=3,endkeys,required"`
+		Item      map[string]int    `validate:"required,dive,keys,required,endkeys,required,gt=100"`
+	}
+
+	var validate *validator.Validate = validator.New()
+
+	data := Person{
+		Id:   "dasij23423",
+		Name: "GGwps",
+		Addresses: []Address{
+			{
+				Street: "Jln Djuanda",
+				City:   "Jakarta selatan",
+			},
+			{
+				Street: "Jln Gatot",
+				City:   "Jakarta Pusat",
+			},
+		},
+		Hobbies: []string{
+			"makan",
+			"mabuk",
+			"dfasdf",
+			"tsfsdfdr",
+		},
+		School: map[string]School{
+			"DSFW": {Name: "GGWP"},
+			"DWDF": {Name: "asdfsa"},
+			"DSFS": {Name: "werwae"},
+			"DSFV": {Name: "we98we"},
+		},
+		Item: map[string]int{
+			"A": 234,
+			"":  23423,
+			"C": 32,
+		},
+	}
+
+	err := validate.Struct(data)
+	fmt.Println(err.Error())
+	assert.NotEqual(t, nil, err)
+}
+
+func TestMapValidationBasicPass(t *testing.T) {
+	type Address struct {
+		Street string `validate:"required"`
+		City   string `validate:"required"`
+	}
+
+	type School struct {
+		Name string `validate:"required"`
+	}
+
+	type Person struct {
+		Id        string            `validate:"required"`
+		Name      string            `validate:"required"`
+		Addresses []Address         `validate:"required,dive"` // dive tag for collection
+		Hobbies   []string          `validate:"required,dive,required,min=4"`
+		School    map[string]School `validate:"required,dive,keys,required,min=3,endkeys,required"`
+		Item      map[string]int    `validate:"required,dive,keys,required,endkeys,required,gt=100"`
+	}
+
+	var validate *validator.Validate = validator.New()
+
+	data := Person{
+		Id:   "dasij23423",
+		Name: "GGwps",
+		Addresses: []Address{
+			{
+				Street: "Jln Djuanda",
+				City:   "Jakarta selatan",
+			},
+			{
+				Street: "Jln Gatot",
+				City:   "Jakarta Pusat",
+			},
+		},
+		Hobbies: []string{
+			"makan",
+			"mabuk",
+			"dfasdf",
+			"tsfsdfdr",
+		},
+		School: map[string]School{
+			"DSFW": {Name: "GGWP"},
+			"DWDF": {Name: "asdfsa"},
+			"DSFS": {Name: "werwae"},
+			"DSFV": {Name: "we98we"},
+		},
+		Item: map[string]int{
+			"A": 234,
+			"B": 23423,
+			"C": 3232,
+		},
+	}
+
+	err := validate.Struct(data)
+	assert.Equal(t, nil, err)
+}
