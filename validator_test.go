@@ -2,6 +2,8 @@ package golangvalidator
 
 import (
 	"fmt"
+	"regexp"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -695,6 +697,61 @@ func TestFucnValidatePass(t *testing.T) {
 	data := User{
 		Username: "DJFSD",
 		Password: "faweijwa",
+	}
+
+	err := validate.Struct(data)
+
+	assert.Equal(t, nil, err)
+}
+
+var regestNumber = regexp.MustCompile("^[0-9]+$")
+
+func MustCustomValidate(field validator.FieldLevel) bool {
+	num, err := strconv.Atoi(field.Param())
+	if err != nil {
+		panic(err)
+	}
+
+	value := field.Field().String()
+
+	if !regestNumber.MatchString(value) {
+		return false
+	}
+
+	return len(value) == num
+}
+
+func TestCustomValidationError(t *testing.T) {
+	validate := validator.New()
+	validate.RegisterValidation("pin", MustCustomValidate)
+
+	type DataTest struct {
+		Pin      string `validate:"pin=5"`
+		Username string `validate:"required"`
+	}
+
+	data := DataTest{
+		Pin:      "32432",
+		Username: "asdfasd",
+	}
+
+	err := validate.Struct(data)
+
+	fmt.Println(err.Error())
+	assert.NotEqual(t, nil, err)
+}
+func TestCustomValidationPass(t *testing.T) {
+	validate := validator.New()
+	validate.RegisterValidation("pin", MustCustomValidate)
+
+	type DataTest struct {
+		Pin      string `validate:"pin=5"`
+		Username string `validate:"required"`
+	}
+
+	data := DataTest{
+		Pin:      "32423",
+		Username: "asdfasd",
 	}
 
 	err := validate.Struct(data)
