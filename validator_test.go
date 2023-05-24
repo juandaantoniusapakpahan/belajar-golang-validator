@@ -2,6 +2,7 @@ package golangvalidator
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/go-playground/validator/v10"
@@ -642,6 +643,58 @@ func TestAliasPass(t *testing.T) {
 		Id:    "dsasdff",
 		Name:  "iasdfsd",
 		Email: "fifaowefj",
+	}
+
+	err := validate.Struct(data)
+
+	assert.Equal(t, nil, err)
+}
+
+func MustValidateUsername(field validator.FieldLevel) bool {
+	value, ok := field.Field().Interface().(string)
+	if ok {
+		if value != strings.ToUpper(value) {
+			return false
+		}
+		if len(value) < 5 {
+			return false
+		}
+	}
+	return true
+}
+
+func TestFucnValidateError(t *testing.T) {
+	validate := validator.New()
+	validate.RegisterValidation("username", MustValidateUsername)
+
+	type User struct {
+		Username string `validate:"username"`
+		Password string `validate:"required"`
+	}
+
+	data := User{
+		Username: "asfasSDF",
+		Password: "faweijwa",
+	}
+
+	err := validate.Struct(data)
+
+	fmt.Println(err.Error())
+	assert.NotEqual(t, nil, err)
+}
+
+func TestFucnValidatePass(t *testing.T) {
+	validate := validator.New()
+	validate.RegisterValidation("username", MustValidateUsername)
+
+	type User struct {
+		Username string `validate:"username"`
+		Password string `validate:"required"`
+	}
+
+	data := User{
+		Username: "DJFSD",
+		Password: "faweijwa",
 	}
 
 	err := validate.Struct(data)
