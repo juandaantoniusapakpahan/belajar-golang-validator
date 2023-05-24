@@ -605,3 +605,46 @@ func TestMapValidationBasicPass(t *testing.T) {
 	err := validate.Struct(data)
 	assert.Equal(t, nil, err)
 }
+
+func TestAliasError(t *testing.T) {
+	var validate *validator.Validate = validator.New()
+	validate.RegisterAlias("varchar", "min=5")
+
+	type Profile struct {
+		Id    string `validate:"varchar"`
+		Name  string `validate:"varchar"`
+		Email string `validate:"varchar"`
+	}
+
+	data := Profile{
+		Id:    "dsaf",
+		Name:  "iasd",
+		Email: "fifaowefj",
+	}
+
+	err := validate.Struct(data)
+
+	fmt.Println(err.Error())
+	assert.NotEqual(t, nil, err)
+}
+
+func TestAliasPass(t *testing.T) {
+	var validate *validator.Validate = validator.New()
+	validate.RegisterAlias("varchar", "min=5")
+
+	type Profile struct {
+		Id    string `validate:"varchar"`
+		Name  string `validate:"varchar"`
+		Email string `validate:"varchar"`
+	}
+
+	data := Profile{
+		Id:    "dsasdff",
+		Name:  "iasdfsd",
+		Email: "fifaowefj",
+	}
+
+	err := validate.Struct(data)
+
+	assert.Equal(t, nil, err)
+}
