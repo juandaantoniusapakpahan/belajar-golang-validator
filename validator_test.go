@@ -758,3 +758,27 @@ func TestCustomValidationPass(t *testing.T) {
 
 	assert.Equal(t, nil, err)
 }
+
+func TestOrValidation(t *testing.T) {
+	validate := validator.New()
+
+	type DataTest struct {
+		Username string `validate:"email|numeric"`
+		Password string `validate:"required"`
+	}
+
+	data1 := DataTest{
+		Username: "asdjf@gmail.com",
+		Password: "sasfas",
+	}
+	data2 := DataTest{
+		Username: "23432423",
+		Password: "asdfiaosdf",
+	}
+
+	err := validate.Struct(data1)
+	assert.Equal(t, nil, err)
+
+	err = validate.Struct(data2)
+	assert.Equal(t, nil, err)
+}
