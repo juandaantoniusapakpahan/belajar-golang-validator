@@ -782,3 +782,45 @@ func TestOrValidation(t *testing.T) {
 	err = validate.Struct(data2)
 	assert.Equal(t, nil, err)
 }
+
+func MustEqualIgnor(field validator.FieldLevel) bool {
+	value, _, _, ok := field.GetStructFieldOK2()
+	if !ok {
+		panic("field kosong")
+	}
+
+	fieldValue := strings.ToUpper(value.String())
+	tagValue := strings.ToUpper(field.Field().String())
+
+	return fieldValue == tagValue
+}
+
+func TestCroosValidationCustom(t *testing.T) {
+	validate := validator.New()
+
+	validate.RegisterValidation("username_email_phone", MustEqualIgnor)
+
+	type DataTest struct {
+		Username string `validate:"required,username_email_phone=Email|username_email_phone=Phone"`
+		Email    string `validate:"required,email"`
+		Phone    string `validate:"required,numeric"`
+	}
+
+	data := DataTest{
+		Username: "909800909",
+		Email:    "asfas@gmail.com",
+		Phone:    "909800909",
+	}
+
+	data2 := DataTest{
+		Username: "asfas@gmail.com",
+		Email:    "asfas@gmail.com",
+		Phone:    "909800909",
+	}
+
+	err := validate.Struct(data)
+	assert.Equal(t, nil, err)
+
+	err = validate.Struct(data2)
+	assert.Equal(t, nil, err)
+}
